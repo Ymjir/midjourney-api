@@ -1,4 +1,5 @@
 import { DiscordImage, MJConfig } from "./interfaces";
+import { sleep } from "./utils";
 
 export const Commands = [
   "ask",
@@ -35,20 +36,21 @@ export class Command {
     if (this.cache[name] !== undefined) {
       return this.cache[name];
     }
+
+    // The new application-command-index API has a timeout of around 2-3 seconds before we can call it again,
+    // adding a delay of 4 seconds just to be safe.
+    await sleep(1000 * 4);
+
     if (this.config.ServerId) {
       const command = await this.getCommand(name);
       this.cache[name] = command;
       return command;
     }
-    this.allCommand();
+    await this.allCommand();
     return this.cache[name];
   }
   async allCommand() {
-    const searchParams = new URLSearchParams({
-      type: "1",
-      include_applications: "true",
-    });
-    const url = `${this.config.DiscordBaseUrl}/api/v9/channels/${this.config.ChannelId}/application-commands/search?${searchParams}`;
+    const url = `${this.config.DiscordBaseUrl}/api/v10/guilds/${this.config.ServerId}/application-command-index`;
 
     const response = await this.config.fetch(url, {
       headers: { authorization: this.config.SalaiToken },
@@ -66,21 +68,22 @@ export class Command {
   }
 
   async getCommand(name: CommandName) {
-    const searchParams = new URLSearchParams({
-      type: "1",
-      query: name,
-      limit: "1",
-      include_applications: "true",
-      // command_ids: `${this.config.BotId}`,
-    });
-    const url = `${this.config.DiscordBaseUrl}/api/v9/channels/${this.config.ChannelId}/application-commands/search?${searchParams}`;
+    const url = `${this.config.DiscordBaseUrl}/api/v10/guilds/${this.config.ServerId}/application-command-index`;
+
     const response = await this.config.fetch(url, {
       headers: { authorization: this.config.SalaiToken },
     });
     const data = await response.json();
-    if (data?.application_commands?.[0]) {
-      return data.application_commands[0];
+
+    const command = data?.application_commands?.find(
+      (application_command: { type: number; name: string }) =>
+        application_command.type === 1 && application_command.name === name,
+    );
+
+    if (command) {
+      return command;
     }
+
     throw new Error(`Failed to get application_commands for command ${name}`);
   }
   async imaginePayload(prompt: string, nonce?: string) {
@@ -146,7 +149,7 @@ export class Command {
           filename: image.filename,
           uploaded_filename: image.upload_filename,
         },
-      ]
+      ],
     );
     return this.data2Paylod(data, nonce);
   }
@@ -154,7 +157,7 @@ export class Command {
   protected async commandData(
     name: CommandName,
     options: any[] = [],
-    attachments: any[] = []
+    attachments: any[] = [],
   ) {
     const command = await this.cacheCommand(name);
     const data = {

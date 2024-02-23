@@ -1037,7 +1037,7 @@ export async function walk_and_store_blobs(
     return [
       {
         path: path,
-        blob: is_image ? false : new NodeBlob([param]),
+        blob: is_image ? false : new Blob([param]),
         data: is_image ? `${param.toString("base64")}` : false,
         type,
       },

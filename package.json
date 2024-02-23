@@ -1,10 +1,11 @@
 {
-  "name": "midjourney",
-  "version": "4.0.0",
+  "name": "@ymjir/midjourney-api",
+  "version": "4.0.1",
   "description": "Node.js client for the unofficial MidJourney API.",
   "main": "libs/index.js",
   "types": "libs/index.d.ts",
   "source": "./src/index.ts",
+  "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
@@ -19,7 +20,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/erictik/midjourney-client.git"
+    "url": "git+https://github.com/ymjir/midjourney-api.git"
   },
   "keywords": [
     "midjourney-client",
@@ -31,26 +32,26 @@
   "author": "Eric Yang <yanghao@10d.xin>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/erictik/midjourney-client/issues"
+    "url": "https://github.com/ymjir/midjourney-api/issues"
   },
-  "homepage": "https://github.com/erictik/midjourney-client#readme",
+  "homepage": "https://github.com/ymjir/midjourney-api#readme",
   "devDependencies": {
-    "@types/async": "^3.2.20",
-    "@types/node": "^18.16.0",
-    "@types/ws": "^8.5.4",
-    "dotenv": "^16.0.3",
-    "prettier": "^2.8.8",
-    "ts-node": "^10.9.1",
-    "tsx": "^3.12.6",
-    "typescript": "^5.0.4"
+    "@types/async": "^3.2.24",
+    "@types/node": "^20.11.20",
+    "@types/ws": "^8.5.10",
+    "dotenv": "^16.4.5",
+    "prettier": "^3.2.5",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.7.1",
+    "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@huggingface/inference": "^2.5.0",
-    "async": "^3.2.4",
+    "@huggingface/inference": "^2.6.4",
+    "async": "^3.2.5",
     "isomorphic-ws": "^5.0.0",
     "semiver": "^1.1.0",
     "snowyflake": "^2.0.0",
-    "tslib": "^2.5.0",
-    "ws": "^8.13.0"
+    "tslib": "^2.6.2",
+    "ws": "^8.16.0"
   }
 }
