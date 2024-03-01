@@ -28,15 +28,6 @@ function getCommandName(name: string): CommandName | undefined {
   }
 }
 
-type CommandItem = {
-  "id": string,
-  "type": number,
-  "application_id": string,
-  "version": string,
-  "name": string,
-  "description": string
-}
-
 export class Command {
   constructor(public config: MJConfig) {}
   cache: Partial<Record<CommandName, Command>> = {};
@@ -76,7 +67,7 @@ export class Command {
     }
   }
 
-  async getCommand(name: CommandName, retryCount = 0): Promise<CommandItem> {
+  async getCommand(name: CommandName, retryCount = 0): Promise<any> {
     const url = `${this.config.DiscordBaseUrl}/api/v10/guilds/${this.config.ServerId}/application-command-index`;
 
     const response = await this.config.fetch(url, {
@@ -91,7 +82,7 @@ export class Command {
     }
 
     const command = data?.application_commands?.find(
-      (application_command: CommandItem) =>
+      (application_command: any) =>
         application_command.type === 1 && application_command.name === name,
     );
 
