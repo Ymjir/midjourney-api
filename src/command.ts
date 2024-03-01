@@ -28,6 +28,15 @@ function getCommandName(name: string): CommandName | undefined {
   }
 }
 
+type CommandItem = {
+  "id": string,
+  "type": number,
+  "application_id": string,
+  "version": string,
+  "name": string,
+  "description": string
+}
+
 export class Command {
   constructor(public config: MJConfig) {}
   cache: Partial<Record<CommandName, Command>> = {};
@@ -37,9 +46,9 @@ export class Command {
       return this.cache[name];
     }
 
-    // The new application-command-index API has a timeout of around 2-3 seconds before we can call it again,
-    // adding a delay of 4 seconds just to be safe.
-    await sleep(1000 * 4);
+    // The new application-command-index API has a timeout of around 3-4 seconds before we can call it again,
+    // adding a delay of 5 seconds just to be safe.
+    await sleep(1000 * 5);
 
     if (this.config.ServerId) {
       const command = await this.getCommand(name);
@@ -67,7 +76,7 @@ export class Command {
     }
   }
 
-  async getCommand(name: CommandName) {
+  async getCommand(name: CommandName, retryCount = 0): Promise<CommandItem> {
     const url = `${this.config.DiscordBaseUrl}/api/v10/guilds/${this.config.ServerId}/application-command-index`;
 
     const response = await this.config.fetch(url, {
@@ -75,8 +84,14 @@ export class Command {
     });
     const data = await response.json();
 
+    // failsafe: if sleep for 5 seconds fails for some unknown reasons.
+    if (data?.retry_after && retryCount < 3) {
+      await sleep(1000 * data?.retry_after);
+      return await this.getCommand(name, retryCount + 1);
+    }
+
     const command = data?.application_commands?.find(
-      (application_command: { type: number; name: string }) =>
+      (application_command: CommandItem) =>
         application_command.type === 1 && application_command.name === name,
     );
 

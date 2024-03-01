@@ -1,6 +1,6 @@
 {
   "name": "@ymjir/midjourney-api",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Node.js client for the unofficial MidJourney API.",
   "main": "libs/index.js",
   "types": "libs/index.d.ts",
